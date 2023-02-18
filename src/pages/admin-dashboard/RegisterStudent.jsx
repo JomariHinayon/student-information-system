@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Unstable_Grid2";
+import Autocomplete from "@mui/material/Autocomplete";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
@@ -17,14 +18,18 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { async } from "@firebase/util";
 import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import Collapse from "@mui/material/Collapse";
 import CloseIcon from "@mui/icons-material/Close";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { collection, addDoc } from "firebase/firestore";
+// import * as firebase from "firebase/app";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
+import "firebase/compat/firestore";
 
 const RegisterStudent = () => {
   const firstnameRef = React.useRef();
@@ -36,6 +41,7 @@ const RegisterStudent = () => {
   const emailRef = React.useRef();
   const passwordRef = React.useRef();
   const confirmPasswordRef = React.useRef();
+  const [course, setCourse] = React.useState()
   const [value, setValue] = React.useState(dayjs("2023-02-15T21:11:54"));
   const { registerStudent } = useAuth();
   const [error, setError] = React.useState(""); // set the errors
@@ -43,22 +49,11 @@ const RegisterStudent = () => {
   const [open, setOpen] = React.useState(true);
   const [successRegister, setSuccessRegister] = React.useState(false);
   const usersCollectionRef = collection(db, "students");
-  const [emptyFields, setEmptyFields] = React.useState(false)
-
-  const allFields = [
-    firstnameRef,
-    middlenameRef,
-    lastnameRef,
-    birthdayRef,
-    genderRef,
-    studentNumberRef,
-    emailRef,
-    passwordRef,
-    confirmPasswordRef,
-  ];
+  const [emptyFields, setEmptyFields] = React.useState(false);
 
   const handleChange = (newValue) => {
     setValue(newValue);
+    setError("");
   };
 
   // Submit is clicked
@@ -81,50 +76,52 @@ const RegisterStudent = () => {
   //   setLoading(false);
   // };
 
-  // check all fields if empty
-  React.useEffect(() => {
-    allFields.map((field) => {
-      if (field.current.value == "") {
-        return setEmptyFields(true)
-      }
-    });
-  }, [emptyFields]);
+  const coursesAvailable = [
+    "Bachelor of Science in Computer Science",
+    "Bachelor of Science in Computer Engineering",
+    "Bachelor of Science in Information Technology"
+  ]
+
+  // convert date to firebase timestamp
+  function ConvertedDate() {
+    const bdayTimestamp = firebase.firestore.Timestamp.fromDate(
+      new Date(birthdayRef.current.value)
+    ).toDate();
+
+    return bdayTimestamp;
+  }
 
   // register button is clicked
   const handleRegister = async (e) => {
     e.preventDefault();
+
 
     const fieldsValue = {
       firstname: firstnameRef.current.value,
       middlename: middlenameRef.current.value,
       lastname: lastnameRef.current.value,
       email: emailRef.current.value,
-      // birthday: birthdayRef.current.value,
+      birthday: ConvertedDate(),
       gender: genderRef.current.value,
       student_number: studentNumberRef.current.value,
       password: passwordRef.current.value,
+      course: course
     };
 
-    console.log(emptyFields);
-    if (emptyFields) { 
-      setEmptyFields(false)
-      return setError("Please input all fields");
-    }
     // check if password and confirm password are the same
-    else if (passwordRef.current.value !== confirmPasswordRef.current.value) {
+    if (passwordRef.current.value !== confirmPasswordRef.current.value) {
       return setError("Password do not match");
-    } else {
-      try {
-        setLoading(true);
-        // await addDoc(usersCollectionRef, fieldsValue);
-        setSuccessRegister(true);
-      } catch {
-        return setError("Failed to register the student");
-      }
     }
 
+    try {
+      setError("");
+      setLoading(true);
+      await addDoc(usersCollectionRef, fieldsValue);
+      setSuccessRegister(true);
+    } catch {
+      setError("Failed to register the student");
+    }
     setLoading(false);
-    // setSuccessRegister(false)
   };
 
   return (
@@ -146,18 +143,18 @@ const RegisterStudent = () => {
             <Collapse in={open}>
               <Alert
                 severity="error"
-                action={
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    size="small"
-                    onClick={() => {
-                      setOpen(false);
-                    }}
-                  >
-                    <CloseIcon fontSize="inherit" />
-                  </IconButton>
-                }
+                // action={
+                //   <IconButton
+                //     aria-label="close"
+                //     color="inherit"
+                //     size="small"
+                //     onClick={() => {
+                //       setOpen(false);
+                //     }}
+                //   >
+                //     <CloseIcon fontSize="inherit" />
+                //   </IconButton>
+                // }
                 sx={{ mb: 2 }}
               >
                 {error}
@@ -169,18 +166,18 @@ const RegisterStudent = () => {
             <Collapse in={open}>
               <Alert
                 severity="success"
-                action={
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    size="small"
-                    onClick={() => {
-                      setOpen(false);
-                    }}
-                  >
-                    <CloseIcon fontSize="inherit" />
-                  </IconButton>
-                }
+                // action={
+                //   <IconButton
+                //     aria-label="close"
+                //     color="inherit"
+                //     size="small"
+                //     onClick={() => {
+                //       setOpen(false);
+                //     }}
+                //   >
+                //     <CloseIcon fontSize="inherit" />
+                //   </IconButton>
+                // }
                 sx={{ mb: 2 }}
               >
                 Student successfully register
@@ -205,6 +202,7 @@ const RegisterStudent = () => {
                 type="text"
                 sx={{ width: 300 }}
                 inputRef={firstnameRef}
+                required
               />
             </Grid>
             <Grid xs={4}>
@@ -215,6 +213,7 @@ const RegisterStudent = () => {
                 type="text"
                 sx={{ width: 300 }}
                 inputRef={lastnameRef}
+                required
               />
             </Grid>
             <Grid xs={4}>
@@ -235,6 +234,7 @@ const RegisterStudent = () => {
                 variant="outlined"
                 type="email"
                 sx={{ width: 380 }}
+                required
               />
             </Grid>
             <Grid xs={4}>
@@ -246,11 +246,12 @@ const RegisterStudent = () => {
                   value={value}
                   onChange={handleChange}
                   renderInput={(params) => <TextField {...params} />}
+                  required
                 />
               </LocalizationProvider>
             </Grid>
             <Grid xs={3}>
-              <FormControl>
+              <FormControl> 
                 <FormLabel id="demo-row-radio-buttons-group-label">
                   Gender
                 </FormLabel>
@@ -282,6 +283,21 @@ const RegisterStudent = () => {
                 type="number"
                 sx={{ width: 300 }}
                 inputRef={studentNumberRef}
+                required
+              />
+            </Grid>
+            <Grid xs={4}>
+              <Autocomplete
+                disablePortal
+                id="combo-box-demo"
+                options={coursesAvailable}
+                onChange={(event, value) => setCourse(value)}
+                sx={{ width: 300 }}
+
+                renderInput={(params) => (
+                  <TextField {...params} label="Course" />
+                )}
+                required
               />
             </Grid>
             <Grid xs={4}>
@@ -292,6 +308,7 @@ const RegisterStudent = () => {
                 type="password"
                 sx={{ width: 300 }}
                 inputRef={passwordRef}
+                required
               />
             </Grid>
             <Grid xs={4}>
@@ -302,6 +319,7 @@ const RegisterStudent = () => {
                 type="password"
                 sx={{ width: 300 }}
                 inputRef={confirmPasswordRef}
+                required
               />
             </Grid>
           </Grid>

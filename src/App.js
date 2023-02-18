@@ -3,7 +3,7 @@ import VisitingLayout from "./layouts/VisitingLayout";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Login from "./pages/Login";
-import RegisterStudent from "./pages/RegisterStudent";
+import RegisterStudent from "./pages/admin-dashboard/RegisterStudent";
 import { AuthProvider } from "./context/AuthContext";
 import StudentDashboardLayout from "./layouts/StudentDashboardLayout";
 import StudentProfile from "./pages/student-dashboard/StudentProfile";
@@ -16,6 +16,7 @@ import VisitingPrivateRoute from "./routes/VisitingPrivateRoute";
 import Page404 from "./pages/Page404";
 import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
 import StudentList from "./pages/admin-dashboard/StudentList";
+import EditStudentData from "./pages/admin-dashboard/EditStudentData";
 // import { useAuth } from "./context/AuthContext";
 
 function App() {
@@ -60,6 +61,7 @@ function App() {
             <Route path="/admin" element={<AdminDashboardLayout />}>
               <Route path="student-list" element={<StudentList />}/>
               <Route path="register-student" element={<RegisterStudent />} />
+              <Route path="edit-student-data" element={<EditStudentData />} />
             </Route>
           </Routes>
         </AuthProvider>
