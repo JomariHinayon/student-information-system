@@ -11,7 +11,7 @@ import StudentCourses from "./pages/student-dashboard/StudentCourses";
 import StudentPayments from "./pages/student-dashboard/StudentPayments";
 import StudentGrades from "./pages/student-dashboard/StudentGrades";
 import StudentSchedule from "./pages/student-dashboard/StudentSchedule";
-import StudentPrivateRoute from "./routes/StudentPrivateRoute";
+import LoginPrivateRoute from "./routes/LoginPrivateRoute";
 import VisitingPrivateRoute from "./routes/VisitingPrivateRoute";
 import Page404 from "./pages/Page404";
 import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
@@ -28,7 +28,7 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            {/* Visiting Layout */}
+            {/* Visiting Route */}
             <Route path="*" element={<Page404 />} />
             <Route
               path="/"
@@ -42,13 +42,14 @@ function App() {
               <Route path="about" element={<About />} />
               <Route path="login" element={<Login />} />
             </Route>
-            {/* Student Dashboard Layout */}
+
+            {/* Student Route*/}
             <Route
               path="/student"
               element={
-                <StudentPrivateRoute>
+                <LoginPrivateRoute>
                   <StudentDashboardLayout />
-                </StudentPrivateRoute>
+                </LoginPrivateRoute>
               }
             >
               <Route path="profile" element={<StudentProfile />} />
@@ -57,9 +58,17 @@ function App() {
               <Route path="grades" element={<StudentGrades />} />
               <Route path="schedule" element={<StudentSchedule />} />
             </Route>
-            {/* Admin Dashboard Layout */}
-            <Route path="/admin" element={<AdminDashboardLayout />}>
-              <Route path="student-list" element={<StudentList />}/>
+
+            {/* Admin Route */}
+            <Route
+              path="/admin"
+              element={
+                <LoginPrivateRoute>
+                  <AdminDashboardLayout />
+                </LoginPrivateRoute>
+              }
+            >
+              <Route path="student-list" element={<StudentList />} />
               <Route path="register-student" element={<RegisterStudent />} />
               <Route path="edit-student-data" element={<EditStudentData />} />
             </Route>

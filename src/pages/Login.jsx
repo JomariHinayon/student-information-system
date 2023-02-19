@@ -33,7 +33,8 @@ const Login = () => {
         setLoading(true);
         await login(emailRef.current.value, passwordRef.current.value);
         navigate('/student/profile')
-      } catch {
+      } catch (error){
+        // console.log(error)
         setError("Invalid email or password");
       }
     }

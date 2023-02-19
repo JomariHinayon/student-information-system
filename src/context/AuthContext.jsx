@@ -1,7 +1,8 @@
 // For authentication so that login user will be global to all pages
 import React, { useContext, useEffect, useState } from "react";
 // this is the connection to firebase database in firebase.js
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { collection, setDoc, doc } from "firebase/firestore";
 
 const AuthContext = React.createContext();
 
@@ -15,7 +16,8 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   // for registering the student or you can change this code to axios or local server
-  function registerStudent(email, password) {
+  function registerStudent(email, password, fieldsValue) {
+    setDoc(doc(db, "students", email), fieldsValue);
     return auth.createUserWithEmailAndPassword(email, password);
   }
 

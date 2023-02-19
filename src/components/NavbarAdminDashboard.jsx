@@ -23,7 +23,7 @@ const pages = [
 ];
 const settings = [
   { text: "Edit Profile", href: "student-edit" },
-  { text: "logout" },
+  { text: "logout" , href: "/login"},
 ];
 
 const NavbarAdminDashboard = () => {

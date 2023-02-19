@@ -48,33 +48,12 @@ const RegisterStudent = () => {
   const [loading, setLoading] = React.useState(false); // loading animation in clicking submit to prevent multiple submits
   const [open, setOpen] = React.useState(true);
   const [successRegister, setSuccessRegister] = React.useState(false);
-  const usersCollectionRef = collection(db, "students");
   const [emptyFields, setEmptyFields] = React.useState(false);
 
   const handleChange = (newValue) => {
     setValue(newValue);
     setError("");
   };
-
-  // Submit is clicked
-  // const handleRegister = async (e) => {
-  //   e.preventDefault();
-
-  //   // check if password and confirm password are the same
-  //   if (passwordRef.current.value !== confirmPasswordRef.current.value) {
-  //     return setError("Password do not match");
-  //   }
-
-  //   try {
-  //     setError("");
-  //     setLoading(true);
-  //     await registerStudent(emailRef.current.value, passwordRef.current.value);
-  //     setSuccessRegister(true);
-  //   } catch {
-  //     setError("Failed to register the student");
-  //   }
-  //   setLoading(false);
-  // };
 
   const coursesAvailable = [
     "Bachelor of Science in Computer Science",
@@ -116,9 +95,10 @@ const RegisterStudent = () => {
     try {
       setError("");
       setLoading(true);
-      await addDoc(usersCollectionRef, fieldsValue);
+      await registerStudent(emailRef.current.value, passwordRef.current.value, fieldsValue)
       setSuccessRegister(true);
-    } catch {
+    } catch (error){
+      console.log(error)
       setError("Failed to register the student");
     }
     setLoading(false);

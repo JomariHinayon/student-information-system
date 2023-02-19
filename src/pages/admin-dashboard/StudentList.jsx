@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { db } from "../../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import * as React from "react";
 import PropTypes from "prop-types";
 import { alpha } from "@mui/material/styles";
@@ -226,6 +226,13 @@ function EnhancedTableToolbar(props) {
     navigate("/admin/edit-student-data", { state: { studentId: props.selected[0] } });
   };
 
+  // Delete student icon click 
+  const handleDeleteStudent = async () => {
+    const userDoc = doc(db, "students", props.selected[0])
+    await deleteDoc(userDoc)
+    window.location.reload(false)
+  }
+
   return (
     <Toolbar
       sx={{
@@ -260,10 +267,10 @@ function EnhancedTableToolbar(props) {
         </Typography>
       )}
 
-      {numSelected > 0 ? (
+      {numSelected == 1 ? (
         <Stack direction="row" spacing={1}>
           <Tooltip title="Delete">
-            <IconButton>
+            <IconButton onClick={handleDeleteStudent}>
               <DeleteIcon />
             </IconButton>
           </Tooltip>

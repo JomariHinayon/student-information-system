@@ -25,7 +25,7 @@ const pages = [
 ];
 const settings = [
   { text: "Edit Profile", href: "student-edit" },
-  { text: "logout" },
+  { text: "logout", href: "/" },
 ];
 
 const NavbarStudentDashboard = () => {
@@ -53,6 +53,7 @@ const NavbarStudentDashboard = () => {
 
   // setting profile
   const handleSettings = async (setting) => {
+    console.log(setting)
     if (setting == "logout") {
       try {
         await logout()
