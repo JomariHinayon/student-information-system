@@ -24,12 +24,10 @@ import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import Collapse from "@mui/material/Collapse";
 import CloseIcon from "@mui/icons-material/Close";
-import { db } from "../../firebase";
-import { collection, addDoc } from "firebase/firestore";
-// import * as firebase from "firebase/app";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
+import { coursesAvailable } from "../../data/data";
 
 const RegisterStudent = () => {
   const firstnameRef = React.useRef();
@@ -48,18 +46,13 @@ const RegisterStudent = () => {
   const [loading, setLoading] = React.useState(false); // loading animation in clicking submit to prevent multiple submits
   const [open, setOpen] = React.useState(true);
   const [successRegister, setSuccessRegister] = React.useState(false);
-  const [emptyFields, setEmptyFields] = React.useState(false);
+
 
   const handleChange = (newValue) => {
     setValue(newValue);
     setError("");
   };
 
-  const coursesAvailable = [
-    "Bachelor of Science in Computer Science",
-    "Bachelor of Science in Computer Engineering",
-    "Bachelor of Science in Information Technology"
-  ]
 
   // convert date to firebase timestamp
   function ConvertedDate() {

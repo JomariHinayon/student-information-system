@@ -14,27 +14,26 @@ import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { Link } from "react-router-dom";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 const pages = [
-  { text: "Profile", href: "profile" },
-  { text: "Courses", href: "courses" },
-  { text: "Payments", href: "payments" },
-  { text: "Grades", href: "grades" },
-  { text: "Schedule", href: "schedule" },
+  { text: "Student List", href: "student-list" },
+  { text: "Teacher List", href: "teacher-list" },
+  { text: "Register Student", href: "register-student" },
+  { text: "Register Teacher", href: "register-teacher" },
 ];
 const settings = [
   { text: "Edit Profile", href: "student-edit" },
-  { text: "logout", href: "/" },
+  { text: "logout" , href: "/login"},
 ];
 
-const NavbarStudentDashboard = () => {
+const NavbarAdminDashboard = () => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [error, setError] = React.useState("")
-  const {logout} = useAuth()
-  
-  const navigate = useNavigate()
+  const [error, setError] = React.useState("");
+  const { logout } = useAuth();
+
+  const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -53,18 +52,16 @@ const NavbarStudentDashboard = () => {
 
   // setting profile
   const handleSettings = async (setting) => {
-    console.log(setting)
     if (setting == "logout") {
       try {
-        await logout()
-        console.log("logout")
-        navigate('/login')
+        await logout();
+        console.log("logout");
+        navigate("/login");
       } catch {
-        setError("Failed to logout")
+        setError("Failed to logout");
       }
     }
   };
-
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -203,4 +200,4 @@ const NavbarStudentDashboard = () => {
   );
 };
 
-export default NavbarStudentDashboard;
+export default NavbarAdminDashboard;

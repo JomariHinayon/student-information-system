@@ -86,16 +86,16 @@ const headCells = [
     label: "Middlename",
   },
   {
-    id: "course",
+    id: "handle-subject",
     numeric: false,
     disablePadding: false,
-    label: "Course",
+    label: "Handled Subject",
   },
   {
-    id: "student-number",
+    id: "teacher-number",
     numeric: false,
     disablePadding: false,
-    label: "Student Number",
+    label: "Teacher Number",
   },
   {
     id: "email",
@@ -191,17 +191,19 @@ function EnhancedTableToolbar(props) {
   // console.log(props.selected[0]);
   const navigate = useNavigate();
 
-  // Edit student icon click
-  const editStudentData = () => {
-    navigate("/admin/edit-student-data", { state: { studentId: props.selected[0] } });
+  // Edit teacher icon click
+  const editTeacherData = () => {
+    navigate("/admin/edit-teacher-data", {
+      state: { teacherId: props.selected[0] },
+    });
   };
 
-  // Delete student icon click 
-  const handleDeleteStudent = async () => {
-    const userDoc = doc(db, "students", props.selected[0])
-    await deleteDoc(userDoc)
-    window.location.reload(false)
-  }
+  // Delete teacher icon click
+  const handleDeleteTeacher = async () => {
+    const userDoc = doc(db, "teachers", props.selected[0]);
+    await deleteDoc(userDoc);
+    window.location.reload(false);
+  };
 
   return (
     <Toolbar
@@ -233,20 +235,20 @@ function EnhancedTableToolbar(props) {
           id="tableTitle"
           component="div"
         >
-          Students
+          Teachers
         </Typography>
       )}
 
       {numSelected == 1 ? (
         <Stack direction="row" spacing={1}>
           <Tooltip title="Delete">
-            <IconButton onClick={handleDeleteStudent}>
+            <IconButton onClick={handleDeleteTeacher}>
               <DeleteIcon />
             </IconButton>
           </Tooltip>
           {numSelected == 1 && (
             <Tooltip title="Edit">
-              <IconButton onClick={editStudentData}>
+              <IconButton onClick={editTeacherData}>
                 <EditIcon />
               </IconButton>
             </Tooltip>
@@ -267,23 +269,23 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-const StudentList = () => {
-  const [studentList, setStudentList] = useState([]);
+const TeacherList = () => {
+  const [teacherList, setTeacherlist] = useState([]);
 
-  // get the student in firebase students doc
-  const studentCollectionRef = collection(db, "students");
+  // get the teacher in firebase teachers doc
+  const teacherCollectionRef = collection(db, "teachers");
 
   useEffect(() => {
-    const getStudentList = async () => {
-      // get the student data in firebase
-      const data = await getDocs(studentCollectionRef);
-      setStudentList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    const getTeacherList = async () => {
+      // get the teacher data in firebase
+      const data = await getDocs(teacherCollectionRef);
+      setTeacherlist(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
 
-    getStudentList();
+    getTeacherList();
   }, []);
 
-  // console.log(studentList);
+  // console.log(teacherList);
 
   // MUI TABLE CONFIG ---------->
   const [order, setOrder] = React.useState("asc");
@@ -301,7 +303,7 @@ const StudentList = () => {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = studentList.map((n) => n.id);
+      const newSelected = teacherList.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
@@ -345,17 +347,17 @@ const StudentList = () => {
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - studentList.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - teacherList.length) : 0;
 
   // END: MUI TABLE CONFIG -------------->
 
   return (
     // <Box>
-    //   {studentList.map((student) => {
+    //   {teacherList.map((teacher) => {
     //     return (
-    //       <Box key={student.id}>
-    //         <Typography>{student.firstname}</Typography>
-    //         <Typography>{student.lastname}</Typography>
+    //       <Box key={teacher.id}>
+    //         <Typography>{teacher.firstname}</Typography>
+    //         <Typography>{teacher.lastname}</Typography>
     //       </Box>
     //     );
     //   })}
@@ -378,10 +380,10 @@ const StudentList = () => {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={studentList.length}
+              rowCount={teacherList.length}
             />
             <TableBody>
-              {stableSort(studentList, getComparator(order, orderBy))
+              {stableSort(teacherList, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.id);
@@ -395,7 +397,7 @@ const StudentList = () => {
                     row.firstname.slice(1);
                   const middleInitial = row.middlename.charAt(0).toUpperCase();
 
-                  // Create the fullname of student
+                  // Create the fullname of teacher
                   const fullname =
                     lname + ", " + fname + ", " + middleInitial + ".";
 
@@ -450,8 +452,8 @@ const StudentList = () => {
                         {row.middlename.charAt(0).toUpperCase() +
                           row.middlename.slice(1)}
                       </TableCell>
-                      <TableCell align="left">{row.course}</TableCell>
-                      <TableCell align="left">{row.student_number}</TableCell>
+                      <TableCell align="left">{row.handled_subject}</TableCell>
+                      <TableCell align="left">{row.teacher_number}</TableCell>
                       <TableCell align="left">{row.email}</TableCell>
                       <TableCell align="center">{row.gender}</TableCell>
                       <TableCell align="center">{row.password}</TableCell>
@@ -474,7 +476,7 @@ const StudentList = () => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={studentList.length}
+          count={teacherList.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -489,4 +491,4 @@ const StudentList = () => {
   );
 };
 
-export default StudentList;
+export default TeacherList;

@@ -13,7 +13,7 @@ import {
   Button,
   Collapse,
   Alert,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
@@ -26,12 +26,11 @@ import { db } from "../../firebase";
 import EditIcon from "@mui/icons-material/Edit";
 import firebase from "firebase/compat/app";
 import CloseIcon from "@mui/icons-material/Close";
-import { coursesAvailable } from "../../data/data";
+import { subjectsAvailable } from "../../data/data";
 
-
-const EditStudentData = () => {
-  const [studentId, setStudentId] = useState("");
-  const [studentData, setStudentData] = useState([]);
+const EditTeacherData = () => {
+  const [teacherId, setTeacherId] = useState("");
+  const [teacherData, setTeacherData] = useState([]);
   const { state } = useLocation();
   const fname = useRef();
   const mname = useRef();
@@ -40,40 +39,40 @@ const EditStudentData = () => {
   const password = useRef();
   const [male, setMale] = useState(false);
   const [female, setFemale] = useState(false);
-  const [course, setCourse] = useState();
+  const [handledSubject, setHandledSubject] = useState();
   const [bday, setBday] = React.useState(dayjs("2023-02-15T21:11:54"));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successUpdate, setSuccessUpdate] = useState(false);
   const [open, setOpen] = React.useState(true);
 
-  // getting student data
+  // getting teacher data
   useEffect(() => {
-    const getStudentData = async () => {
-      setStudentId(state.studentId);
+    const getTeacherData = async () => {
+      setTeacherId(state.teacherId);
 
       try {
-        const docRef = doc(db, "students", studentId);
+        const docRef = doc(db, "teachers", teacherId);
         const docSnap = await getDoc(docRef);
         // console.log({...docSnap.data(), id: docSnap.id})
-        setStudentData({ ...docSnap.data(), id: docSnap.id });
+        setTeacherData({ ...docSnap.data(), id: docSnap.id });
       } catch (error) {
         // console.log(error)
-        console.log("getting the students data...!");
+        console.log("getting the teacher data...!");
       }
     };
 
-    getStudentData();
-  }, [studentId]);
+    getTeacherData();
+  }, [teacherId]);
 
-  // setting student data into the text fields
+  // setting teacher data into the text fields
   useEffect(() => {
     const setFieldsData = () => {
       try {
         // convert firebase timestamp date to readable date
         const fireBaseTime = new Date(
-          studentData.birthday.seconds * 1000 +
-            studentData.birthday.nanoseconds / 1000000
+            teacherData.birthday.seconds * 1000 +
+            teacherData.birthday.nanoseconds / 1000000
         );
         const date = fireBaseTime.toDateString();
         setBday(date);
@@ -82,24 +81,24 @@ const EditStudentData = () => {
         console.log("getting birthday...");
       }
 
-      // console.log(studentData);
-      fname.current.value = studentData.firstname;
-      lname.current.value = studentData.lastname;
-      mname.current.value = studentData.middlename;
-      email.current.value = studentData.email;
-      password.current.value = studentData.password;
-      setCourse(studentData.course);
+      // console.log(teacherData);
+      fname.current.value = teacherData.firstname;
+      lname.current.value = teacherData.lastname;
+      mname.current.value = teacherData.middlename;
+      email.current.value = teacherData.email;
+      password.current.value = teacherData.password;
+      setHandledSubject(teacherData.handled_subject);
 
       // check gender
-      if (studentData.gender === "male") {
+      if (teacherData.gender === "male") {
         setMale(true);
-      } else if (studentData.gender === "female") {
+      } else if (teacherData.gender === "female") {
         setFemale(true);
       }
     };
 
     setFieldsData();
-  }, [studentData]);
+  }, [teacherData]);
 
   // set new birthday value
   const handleNewBirthday = (newValue) => {
@@ -118,9 +117,8 @@ const EditStudentData = () => {
 
       return bdayTimestamp;
     };
-   
-  
-    console.log(male)
+
+    console.log(male);
     const updatedData = {
       firstname: fname.current.value,
       middlename: mname.current.value,
@@ -129,21 +127,20 @@ const EditStudentData = () => {
       password: password.current.value,
       birthday: ConvertedDate(),
       gender: male ? "male" : "female",
-      course: course,
+      handled_subject: handledSubject,
     };
 
     try {
-      setError("")
+      setError("");
       setLoading(true);
-      const userDoc = doc(db, "students", studentId);
+      const userDoc = doc(db, "teachers", teacherId);
       await updateDoc(userDoc, updatedData);
-      setSuccessUpdate(true)
+      setSuccessUpdate(true);
     } catch (error) {
-      setError("Failed to update student data")
+      setError("Failed to update teacher data");
     }
     setLoading(false);
   };
-
   return (
     <Box display="flex" height={500}>
       <Box
@@ -196,7 +193,7 @@ const EditStudentData = () => {
               }
               sx={{ mb: 2 }}
             >
-              Student data successfully updated
+              Teacher Profile successfully updated
             </Alert>
           </Collapse>
         )}
@@ -266,23 +263,29 @@ const EditStudentData = () => {
                   control={<Radio />}
                   label="Female"
                   checked={female}
-                  onClick={() => {setFemale(true); setMale(false); }}
+                  onClick={() => {
+                    setFemale(true);
+                    setMale(false);
+                  }}
                 />
                 <FormControlLabel
                   value="male"
                   control={<Radio />}
                   label="Male"
                   checked={male}
-                  onClick={() => {setFemale(false); setMale(true)}}
+                  onClick={() => {
+                    setFemale(false);
+                    setMale(true);
+                  }}
                 />
               </RadioGroup>
             </FormControl>
             <Autocomplete
               disablePortal
               id="combo-box-demo"
-              options={coursesAvailable}
-              value={course ?? coursesAvailable[0]}
-              onChange={(event, value) => setCourse(value)}
+              options={subjectsAvailable}
+              value={handledSubject ?? subjectsAvailable[0]}
+              onChange={(event, value) => setHandledSubject(value)}
               sx={{ width: 300 }}
               renderInput={(params) => <TextField {...params} label="Course" />}
             />
@@ -302,4 +305,4 @@ const EditStudentData = () => {
   );
 };
 
-export default EditStudentData;
+export default EditTeacherData;

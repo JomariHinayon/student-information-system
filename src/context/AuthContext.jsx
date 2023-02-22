@@ -21,6 +21,12 @@ export function AuthProvider({ children }) {
     return auth.createUserWithEmailAndPassword(email, password);
   }
 
+  // for registering the teacher or you can change this code to axios or local server
+  function registerTeacher(email, password, fieldsValue) {
+    setDoc(doc(db, "teachers", email), fieldsValue);
+    return auth.createUserWithEmailAndPassword(email, password);
+  }
+
   // for login page or you can change this code to axios or local server
   function login(email, password) {
     return auth.signInWithEmailAndPassword(email, password);
@@ -45,6 +51,7 @@ export function AuthProvider({ children }) {
     registerStudent,
     login,
     logout,
+    registerTeacher,  
   };
 
   return (

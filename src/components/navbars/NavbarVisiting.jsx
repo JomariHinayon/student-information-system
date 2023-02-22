@@ -13,26 +13,18 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { Link } from "react-router-dom";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { Link as RouterLink } from "react-router-dom";
 
 const pages = [
-  { text: "Student List", href: "student-list" },
-  { text: "Register Student", href: "register-student" },
-
-];
-const settings = [
-  { text: "Edit Profile", href: "student-edit" },
-  { text: "logout" , href: "/login"},
+  { text: "Home", href: "/" },
+  { text: "Admission", href: "/" },
+  { text: "About", href: "about" },
+  { text: "Login", href: "login" },
 ];
 
-const NavbarAdminDashboard = () => {
+function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [error, setError] = React.useState("");
-  const { logout } = useAuth();
-
-  const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -49,18 +41,6 @@ const NavbarAdminDashboard = () => {
     setAnchorElUser(null);
   };
 
-  // setting profile
-  const handleSettings = async (setting) => {
-    if (setting == "logout") {
-      try {
-        await logout();
-        console.log("logout");
-        navigate("/login");
-      } catch {
-        setError("Failed to logout");
-      }
-    }
-  };
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -69,7 +49,8 @@ const NavbarAdminDashboard = () => {
           <Typography
             variant="h6"
             noWrap
-            component="p"
+            component="a"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -80,7 +61,7 @@ const NavbarAdminDashboard = () => {
               textDecoration: "none",
             }}
           >
-            SCHOOL NAME
+            Self Learn Institute
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -153,50 +134,9 @@ const NavbarAdminDashboard = () => {
               </Button>
             ))}
           </Box>
-          {/* =====================PROFILE================== */}
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Profile">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem
-                  component={RouterLink}
-                  key={setting.text}
-                  onClick={handleCloseUserMenu}
-                  to={setting.href}
-                >
-                  <Typography
-                    textAlign="center"
-                    onClick={() => handleSettings(setting.text)}
-                  >
-                    {setting.text}
-                  </Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
         </Toolbar>
       </Container>
     </AppBar>
   );
-};
-
-export default NavbarAdminDashboard;
+}
+export default Navbar;
